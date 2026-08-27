@@ -1,0 +1,63 @@
+﻿PRODUCT CONCEPT
+AI Content Script Studio
+AI-сценарист для YouTube, TikTok, Reels, Shorts, Instagram и LinkedIn
+Идея → Research → Сценарий → готовый Content Pack
+Ключевая идея
+Сервис превращает тему пользователя в готовый сценарий, адаптированный под конкретную платформу, а не просто генерирует текст по промпту. Монетизация — покупка паков сценариев/контента без обязательной подписки.
+
+1. Продукт
+Проблема. Создателю контента приходится отдельно искать идеи, делать research, придумывать hook, структуру, сценарий и адаптировать материал под каждую соцсеть.
+Решение. Один Creator Profile хранит нишу, аудиторию, tone of voice, цели и стиль. Пользователь выбирает платформу и тему — система собирает структурированный сценарий и publishing assets.
+IDEA	RESEARCH	ANGLE	SCRIPT	PUBLISH
+2. Сценарии по платформам
+Платформа	Что генерируем	Формат
+YouTube	Research, angle, hook, outline, full script, B-roll notes, titles, description, chapters	5–30+ мин
+TikTok / Reels / Shorts	Hook, short script, on-screen text, CTA, caption, B-roll ideas	15–90 сек
+Instagram Carousel	Hook + структура слайдов + тексты + CTA	5–10 слайдов
+LinkedIn	Hook, story/problem, insight, аргументы, CTA	Пост
+X / Threads	Короткий пост или thread из основной идеи	Short / thread
+3. Монетизация: pay-as-you-go
+Вместо ещё одной обязательной подписки пользователь покупает понятный результат — пакет сценариев, который можно использовать в любое время.
+Пак	Цена (гипотеза)	Объём	Цель
+Try it	$4.99	1 сценарий	Первая покупка
+Starter	$14.99	5 сценариев	Небольшие creators
+Creator	$24.99	10 сценариев	Регулярный контент
+Pro	$49.99	25 сценариев	Активные creators / команды
+4. Конкурентный анализ
+Вывод: рынок подтверждён, но большинство решений продаёт подписку или решает только часть workflow. Возможная ниша — специализированный multi-platform script studio с оплатой за готовые паки.
+Конкурент	Фокус	Модель	Что важно для нас
+vidIQ	YouTube: идеи, Script Writer, thumbnails, analytics	Free + subscription / monthly AI credits	Самый прямой YouTube-конкурент; script = 1 credit за минуту, thumbnail generation = 22 credits.
+Predis.ai	Multi-platform social content	Subscription	Доказывает спрос на единый AI workflow для нескольких соцсетей.
+ChatGPT / Claude	Универсальная генерация и research	Subscription / usage	Главный substitute. Наша защита — workflow, Creator Profile, platform templates и готовый результат без промптинга.
+Fiverr	Человеческие scriptwriters	Оплата за заказ	Прямой benchmark willingness-to-pay и качества.
+5. Fiverr как конкурент и ценовой benchmark
+На Fiverr категория YouTube script writing очень насыщена: выдача показывает десятки тысяч услуг. Это важно не только как конкуренция, но и как подтверждение существующего спроса на сценарии как отдельный продукт.
+Пример Fiverr	500 слов	~1 000–1 500 слов	~2 000–3 000 слов
+AI-assisted research gig	$5	$15	$30 / 2 000 слов
+Established writer (564 reviews)	$5	$10–15	—
+Research + scriptwriter (314 reviews)	$5	$15	$30 / 3 000 слов
+Higher-priced writer	$15	$30	$45 / 2 000 слов
+Fiverr Pro example	—	$150 / 1 500 слов	—
+Интерпретация: нижний рынок начинается примерно с $5–15 за короткий/средний сценарий, более качественные и проверенные исполнители могут стоить $30–150+. AI-продукт может выигрывать скоростью, предсказуемым workflow и ценой, не пытаясь конкурировать только «дешевле человека».
+6. MVP
+• Creator Profile: ниша, аудитория, tone of voice, платформы.
+• 10 идей / angles для выбранной темы.
+• Research и источники для long-form контента.
+• YouTube full script + short-form scripts для TikTok / Reels / Shorts.
+• Titles, hooks, captions, CTA и B-roll suggestions.
+• История проектов и повторная генерация отдельных блоков.
+• Покупка паков / credits вместо обязательной подписки.
+Следующий этап: генерация превью и визуалов
+После валидации сценариев продукт можно расширить до AI Pre-production Studio.
+Для YouTube: генерация 3–5 thumbnail concepts и готовых превью, связка Title + Thumbnail, B-roll/graphics. Для Instagram/LinkedIn: covers, carousel visuals и infographics. Важно оставить это вторым этапом, чтобы MVP проверял основной спрос — готовность платить за качественные сценарии.
+Источники / market checks
+• vidIQ Script Writer
+• vidIQ AI credits & feature costs
+• vidIQ plans
+• Fiverr AI script writing category
+• Fiverr YouTube video scripts category
+• Fiverr example: AI-assisted research
+• Fiverr example: established writer
+• Fiverr example: researcher/scriptwriter
+• Fiverr example: higher-priced script
+• Fiverr Pro example

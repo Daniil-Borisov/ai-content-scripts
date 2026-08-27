@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  passwordHash  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  profile       CreatorProfile?
+  projects      Project[]
+  purchases     Purchase[]
+  credits       Credit?
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model CreatorProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  niche         String
+  audience      String
+  toneOfVoice   String
+  platforms     String[]
+  style         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Project {
+  id            String   @id @default(cuid())
+  userId        String
+  title         String
+  topic         String
+  status        String   @default("draft")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scripts       Script[]
+}
+
+model Script {
+  id            String   @id @default(cuid())
+  projectId     String
+  platform      String
+  status        String   @default("pending")
+  content       Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  blocks        ScriptBlock[]
+}
+
+model ScriptBlock {
+  id            String   @id @default(cuid())
+  scriptId      String
+  type          String
+  content       String
+  order         Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  script        Script   @relation(fields: [scriptId], references: [id], onDelete: Cascade)
+}
+
+model Pack {
+  id            String   @id @default(cuid())
+  name          String
+  price         Float
+  credits       Int
+  stripePriceId String?
+  createdAt     DateTime @default(now())
+
+  purchases     Purchase[]
+}
+
+model Purchase {
+  id              String   @id @default(cuid())
+  userId          String
+  packId          String
+  stripePaymentId String?  @unique
+  amount          Float
+  credits         Int
+  status          String   @default("pending")
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pack            Pack     @relation(fields: [packId], references: [id])
+}
+
+model Credit {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  balance   Int      @default(0)
+  totalUsed Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
