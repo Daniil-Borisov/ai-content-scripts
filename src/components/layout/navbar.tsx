@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { signOut } from "next-auth/react";
 import { buttonVariants } from "@/components/ui/button";
 import { Menu, X, Coins, LogOut, User, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -54,7 +55,9 @@ export function Navbar() {
   }, []);
 
   const handleSignOut = async () => {
-    window.location.href = "/api/auth/signout";
+    setUserMenuOpen(false);
+    setMobileOpen(false);
+    await signOut({ redirectTo: "/" });
   };
 
   return (

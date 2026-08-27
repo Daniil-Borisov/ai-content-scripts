@@ -19,7 +19,7 @@ export async function GET() {
       totalUsed: credit?.totalUsed || 0,
     });
   } catch (error) {
-    console.error("Fetch credits error");
+    console.error("Fetch credits error:", error);
     return NextResponse.json(
       { error: "Failed to fetch credits" },
       { status: 500 }

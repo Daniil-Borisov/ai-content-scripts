@@ -6,6 +6,8 @@ import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  // Self-hosted behind nginx/proxy — иначе UntrustedHost на публичном домене
+  trustHost: true,
   adapter: PrismaAdapter(db),
   session: { strategy: "jwt" },
   pages: {
