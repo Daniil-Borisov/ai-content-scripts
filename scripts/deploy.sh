@@ -48,7 +48,7 @@ if [[ ! -f .env ]]; then
 fi
 
 log "Установка зависимостей..."
-rm -rf node_modules
+# Не удаляем node_modules каждый раз — экономим RAM/диск на маленьком VPS
 npm install --no-audit --no-fund
 
 log "Prisma generate..."
@@ -59,8 +59,22 @@ if [[ "${RUN_PRISMA_MIGRATE:-0}" == "1" ]]; then
   npx prisma migrate deploy
 fi
 
-log "Сборка Next.js..."
-npm run build
+# exit 137 = OOM killer. Turbopack на слабом VPS часто убивается.
+mem_kb="$(awk '/MemAvailable:/ {print $2}' /proc/meminfo || echo 0)"
+swap_kb="$(awk '/SwapTotal:/ {print $2}' /proc/meminfo || echo 0)"
+log "Память: available=${mem_kb}kB swap=${swap_kb}kB"
+if [[ "${swap_kb}" -lt 1048576 ]]; then
+  echo "Ошибка: для next build нужно >=1GB swap (сейчас ${swap_kb}kB)." >&2
+  echo "На сервере выполните:" >&2
+  echo "  sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile" >&2
+  echo "  sudo mkswap /swapfile && sudo swapon /swapfile" >&2
+  echo "  echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab" >&2
+  exit 1
+fi
+
+log "Сборка Next.js (webpack, меньше пик RAM чем turbopack)..."
+export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=1536}"
+npx next build --webpack
 
 mkdir -p logs
 
