@@ -47,7 +47,10 @@ jobs:
             fi
 
             cd "$DEPLOY_PATH"
+            git fetch origin main
+            git checkout main
+            git reset --hard origin/main
             export DEPLOY_BRANCH=main
             export RUN_PRISMA_MIGRATE="${{ vars.RUN_PRISMA_MIGRATE }}"
             chmod +x scripts/deploy.sh
-            ./scripts/deploy.sh
+            ./scripts/deploy.sh --post-pull

@@ -21,7 +21,21 @@ require_cmd() {
   fi
 }
 
-require_cmd git
+# Сначала обновляем код, затем перезапускаем УЖЕ новый скрипт.
+# Иначе bash продолжает выполнять старую версию из памяти/inode.
+if [[ "${1:-}" != "--post-pull" ]]; then
+  require_cmd git
+
+  log "Каталог: $ROOT_DIR"
+  log "Ветка: $BRANCH"
+  log "Получение изменений..."
+  git fetch origin "$BRANCH"
+  git checkout "$BRANCH"
+  git reset --hard "origin/$BRANCH"
+
+  exec bash "$ROOT_DIR/scripts/deploy.sh" --post-pull
+fi
+
 require_cmd node
 require_cmd npm
 require_cmd npx
@@ -33,16 +47,7 @@ if [[ ! -f .env ]]; then
   exit 1
 fi
 
-log "Каталог: $ROOT_DIR"
-log "Ветка: $BRANCH"
-
-log "Получение изменений..."
-git fetch origin "$BRANCH"
-git checkout "$BRANCH"
-git reset --hard "origin/$BRANCH"
-
 log "Установка зависимостей..."
-# npm ci падает на сервере (npm 10), если lockfile собран на npm 11 / другой платформе
 rm -rf node_modules
 npm install --no-audit --no-fund
 
