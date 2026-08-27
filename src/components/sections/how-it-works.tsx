@@ -47,6 +47,15 @@ export function HowItWorksSection() {
           </p>
         </div>
 
+        {/* Workflow illustration */}
+        <div className="mb-16 max-w-[600px] mx-auto">
+          <img
+            src="/images/workflow.svg"
+            alt="ScriptForge workflow: Idea → Research → Script → Publish"
+            className="w-full h-auto"
+          />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {steps.map((step) => {
             const Icon = step.icon;

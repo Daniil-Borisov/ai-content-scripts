@@ -19,6 +19,11 @@ export const metadata: Metadata = {
   title: "ScriptForge AI — AI-Powered Content Scripts for Every Platform",
   description:
     "Turn any topic into platform-perfect scripts for YouTube, TikTok, Reels, Shorts, Instagram, and LinkedIn. From idea to publish-ready content in minutes.",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
   openGraph: {
     title: "ScriptForge AI — AI-Powered Content Scripts",
     description:

@@ -28,7 +28,25 @@ jobs:
           command_timeout: 15m
           script: |
             set -euo pipefail
-            cd "${{ secrets.DEPLOY_PATH }}"
+
+            DEPLOY_PATH='${{ secrets.DEPLOY_PATH }}'
+            REPO_URL='${{ secrets.DEPLOY_REPO_URL }}'
+
+            if [[ -z "$DEPLOY_PATH" ]]; then
+              echo "Ошибка: secret DEPLOY_PATH пустой. Укажите путь, например /var/www/ai-content"
+              exit 1
+            fi
+
+            if [[ ! -d "$DEPLOY_PATH/.git" ]]; then
+              echo "Каталог проекта не найден, клонируем репозиторий..."
+              if [[ -z "$REPO_URL" ]]; then
+                REPO_URL="git@github.com:Daniil-Borisov/ai-content-scripts.git"
+              fi
+              mkdir -p "$(dirname "$DEPLOY_PATH")"
+              git clone --branch main "$REPO_URL" "$DEPLOY_PATH"
+            fi
+
+            cd "$DEPLOY_PATH"
             export DEPLOY_BRANCH=main
             export RUN_PRISMA_MIGRATE="${{ vars.RUN_PRISMA_MIGRATE }}"
             chmod +x scripts/deploy.sh

@@ -80,32 +80,47 @@ export function PlatformsSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {platforms.map((platform) => {
-            const Icon = platform.icon;
-            return (
-              <div
-                key={platform.name}
-                className="bg-card border border-border rounded-[12px] p-6"
-              >
-                <div className="flex items-center gap-3 mb-5">
-                  <Icon size={18} className="text-foreground/70" />
-                  <h3 className="text-base font-medium">{platform.name}</h3>
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          {/* Platform cards */}
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+            {platforms.map((platform) => {
+              const Icon = platform.icon;
+              return (
+                <div
+                  key={platform.name}
+                  className="bg-card border border-border rounded-[12px] p-6"
+                >
+                  <div className="flex items-center gap-3 mb-5">
+                    <Icon size={18} className="text-foreground/70" />
+                    <h3 className="text-base font-medium">{platform.name}</h3>
+                  </div>
+                  <ul className="space-y-2">
+                    {platform.items.map((item) => (
+                      <li
+                        key={item}
+                        className="flex items-start gap-2.5 text-sm text-muted-foreground"
+                      >
+                        <div className="w-1 h-1 rounded-full bg-foreground/30 mt-2 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-2">
-                  {platform.items.map((item) => (
-                    <li
-                      key={item}
-                      className="flex items-start gap-2.5 text-sm text-muted-foreground"
-                    >
-                      <div className="w-1 h-1 rounded-full bg-foreground/30 mt-2 shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+
+          {/* Script editor preview */}
+          <div className="hidden lg:block w-full max-w-[400px] sticky top-28">
+            <img
+              src="/images/script-editor.svg"
+              alt="ScriptForge script editor with block-based editing"
+              className="w-full h-auto rounded-[12px] shadow-lg"
+            />
+            <p className="text-xs text-muted-foreground text-center mt-3">
+              Block-based editor with inline editing and regeneration
+            </p>
+          </div>
         </div>
       </div>
     </section>
