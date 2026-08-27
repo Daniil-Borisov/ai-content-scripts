@@ -127,3 +127,16 @@ html {
   background-color: #1A1A1A15;
   color: #1A1A1A;
 }
+
+@keyframes indeterminate-bar {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+@utility animate-indeterminate-bar {
+  animation: indeterminate-bar 1.35s ease-in-out infinite;
+}

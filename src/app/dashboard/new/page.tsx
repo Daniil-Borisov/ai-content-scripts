@@ -4,7 +4,7 @@ import { useState } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Lightbulb, ArrowRight } from "lucide-react";
+import { Lightbulb, ArrowRight, Loader2 } from "lucide-react";
 
 export default function NewProjectPage() {
   const [topic, setTopic] = useState("");
@@ -84,10 +84,38 @@ export default function NewProjectPage() {
                   "disabled:opacity-50 disabled:cursor-not-allowed"
                 )}
               >
-                {isGenerating ? "Generating..." : "Generate ideas"}
+                {isGenerating ? (
+                  <>
+                    <Loader2 size={16} className="mr-2 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  "Generate ideas"
+                )}
               </button>
             </div>
           </div>
+
+          {isGenerating && (
+            <div className="bg-card border border-border rounded-[12px] p-8 mb-8 text-center">
+              <div className="relative w-14 h-14 mx-auto mb-5">
+                <div className="absolute inset-0 rounded-full border-2 border-muted" />
+                <div className="absolute inset-0 rounded-full border-2 border-foreground border-t-transparent animate-spin" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Lightbulb size={18} className="text-foreground" />
+                </div>
+              </div>
+              <p className="font-medium mb-1">Cooking up angles...</p>
+              <p className="text-sm text-muted-foreground mb-5">
+                Generating 10 content ideas for your topic.
+              </p>
+              <div className="w-full max-w-[320px] mx-auto">
+                <div className="h-2 bg-muted rounded-full overflow-hidden relative">
+                  <div className="absolute inset-y-0 w-2/5 bg-foreground rounded-full animate-indeterminate-bar" />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Ideas list */}
           {ideas.length > 0 && (

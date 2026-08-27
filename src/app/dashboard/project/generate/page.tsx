@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useJobStream } from "@/lib/use-job-stream";
 import { useCredits } from "@/lib/use-credits";
 import { FeedbackButtons } from "@/components/feedback-buttons";
+import { GenerationProgress } from "@/components/generation-progress";
 import {
   Search,
   FileText,
@@ -26,38 +27,25 @@ import {
   Coins,
 } from "lucide-react";
 
-interface Research {
+type ResearchType = {
   keyFacts: string[];
   insights: string[];
   sources: string[];
   statistics: string[];
   expertQuotes: string[];
-}
+};
 
-interface ScriptBlock {
+type ScriptBlockType = {
   type: string;
   content: string;
   order: number;
-}
+};
 
-interface Script {
-  blocks: ScriptBlock[];
+type ScriptType = {
+  blocks: ScriptBlockType[];
   title: string;
   description: string;
-}
-
-const progressSteps = [
-  { min: 0, max: 10, label: "Initializing..." },
-  { min: 10, max: 30, label: "Analyzing topic..." },
-  { min: 30, max: 60, label: "Generating content..." },
-  { min: 60, max: 80, label: "Refining output..." },
-  { min: 80, max: 95, label: "Finalizing..." },
-  { min: 95, max: 100, label: "Almost done..." },
-];
-
-function getProgressStep(progress: number) {
-  return progressSteps.find((s) => progress >= s.min && progress < s.max) || progressSteps[progressSteps.length - 1];
-}
+};
 
 function GenerateContent() {
   const searchParams = useSearchParams();
@@ -65,8 +53,8 @@ function GenerateContent() {
   const idea = searchParams.get("idea") || "";
 
   const [step, setStep] = useState<"research" | "script" | "complete">("research");
-  const [research, setResearch] = useState<Research | null>(null);
-  const [script, setScript] = useState<Script | null>(null);
+  const [research, setResearch] = useState<ResearchType | null>(null);
+  const [script, setScript] = useState<ScriptType | null>(null);
   const [expandedBlocks, setExpandedBlocks] = useState<Set<number>>(new Set([0]));
   const [editingBlock, setEditingBlock] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
@@ -93,7 +81,7 @@ function GenerateContent() {
   // Handle research job completion
   useEffect(() => {
     if (researchStatus?.state === "completed" && researchStatus.result) {
-      const result = researchStatus.result as { research: Research };
+      const result = researchStatus.result as { research: ResearchType };
       setResearch(result.research);
       setStep("script");
       setResearchJobId(null);
@@ -103,7 +91,7 @@ function GenerateContent() {
   // Handle script job completion
   useEffect(() => {
     if (scriptStatus?.state === "completed" && scriptStatus.result) {
-      const result = scriptStatus.result as { script: Script };
+      const result = scriptStatus.result as { script: ScriptType };
       setScript(result.script);
       setStep("complete");
       setExpandedBlocks(new Set([0]));
@@ -189,7 +177,7 @@ function GenerateContent() {
             const statusData = JSON.parse(event.data);
             if (statusData.state === "completed" && statusData.result) {
               eventSource.close();
-              const result = statusData.result as { script: Script };
+              const result = statusData.result as { script: ScriptType };
               if (result.script?.blocks?.[0]) {
                 const newBlocks = [...script.blocks];
                 newBlocks[index] = result.script.blocks[0];
@@ -301,8 +289,6 @@ function GenerateContent() {
 
   const isGeneratingResearch = researchJobId !== null && researchStatus?.state !== "completed" && researchStatus?.state !== "failed";
   const isGeneratingScript = scriptJobId !== null && scriptStatus?.state !== "completed" && scriptStatus?.state !== "failed";
-  const researchProgress = (researchStatus?.progress as number) || 0;
-  const scriptProgress = (scriptStatus?.progress as number) || 0;
 
   useEffect(() => {
     if (topic && idea && !research && !researchJobId && !researchEnqueuedRef.current) {
@@ -439,55 +425,19 @@ function GenerateContent() {
           {step === "research" && (
             <div className="bg-card border border-border rounded-[12px] p-8">
               {isGeneratingResearch ? (
-                <div className="text-center">
-                  {/* Animated icon */}
-                  <div className="relative w-16 h-16 mx-auto mb-6">
-                    <div className="absolute inset-0 rounded-full border-2 border-muted" />
-                    <div
-                      className="absolute inset-0 rounded-full border-2 border-foreground border-t-transparent animate-spin"
-                      style={{
-                        clipPath: `inset(0 0 ${100 - researchProgress}% 0)`,
-                      }}
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Zap size={20} className="text-foreground" />
-                    </div>
-                  </div>
-
-                  <p className="font-medium mb-1">
-                    {getProgressStep(researchProgress).label}
-                  </p>
-                  <p className="text-sm text-muted-foreground mb-6">
-                    Gathering facts, insights, and sources for your content.
-                  </p>
-
-                  {/* Progress bar */}
-                  <div className="w-full max-w-[400px] mx-auto">
-                    <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
-                      <span>Research progress</span>
-                      <span>{researchProgress}%</span>
-                    </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-foreground transition-all duration-300 ease-out rounded-full"
-                        style={{ width: `${researchProgress}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Connection status */}
-                  <div className="flex items-center justify-center gap-1.5 mt-4">
-                    <div
-                      className={cn(
-                        "w-1.5 h-1.5 rounded-full",
-                        researchConnected ? "bg-green-500" : "bg-muted-foreground"
-                      )}
-                    />
-                    <span className="text-xs text-muted-foreground">
-                      {researchConnected ? "Connected" : "Connecting..."}
-                    </span>
-                  </div>
-                </div>
+                <GenerationProgress
+                  description="Gathering facts, insights, and sources for your content."
+                  icon={<Zap size={20} className="text-foreground" />}
+                  isConnected={researchConnected}
+                  statusLabels={[
+                    "Initializing research...",
+                    "Scanning sources...",
+                    "Collecting key facts...",
+                    "Finding insights...",
+                    "Pulling statistics...",
+                    "Almost done...",
+                  ]}
+                />
               ) : (
                 <div className="text-center">
                   <Search
@@ -619,52 +569,20 @@ function GenerateContent() {
           {/* Script generation progress */}
           {step === "script" && isGeneratingScript && (
             <div className="bg-card border border-border rounded-[12px] p-8 mb-6">
-              <div className="text-center">
-                <div className="relative w-16 h-16 mx-auto mb-6">
-                  <div className="absolute inset-0 rounded-full border-2 border-muted" />
-                  <div
-                    className="absolute inset-0 rounded-full border-2 border-cta border-t-transparent animate-spin"
-                    style={{
-                      clipPath: `inset(0 0 ${100 - scriptProgress}% 0)`,
-                    }}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <FileText size={20} className="text-cta" />
-                  </div>
-                </div>
-
-                <p className="font-medium mb-1">
-                  {getProgressStep(scriptProgress).label}
-                </p>
-                <p className="text-sm text-muted-foreground mb-6">
-                  Creating your YouTube script with hooks, structure, and CTAs.
-                </p>
-
-                <div className="w-full max-w-[400px] mx-auto">
-                  <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
-                    <span>Script progress</span>
-                    <span>{scriptProgress}%</span>
-                  </div>
-                  <div className="h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-cta transition-all duration-300 ease-out rounded-full"
-                      style={{ width: `${scriptProgress}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-center gap-1.5 mt-4">
-                  <div
-                    className={cn(
-                      "w-1.5 h-1.5 rounded-full",
-                      scriptConnected ? "bg-green-500" : "bg-muted-foreground"
-                    )}
-                  />
-                  <span className="text-xs text-muted-foreground">
-                    {scriptConnected ? "Connected" : "Connecting..."}
-                  </span>
-                </div>
-              </div>
+              <GenerationProgress
+                accent="cta"
+                description="Creating your YouTube script with hooks, structure, and CTAs."
+                icon={<FileText size={20} className="text-cta" />}
+                isConnected={scriptConnected}
+                statusLabels={[
+                  "Initializing script...",
+                  "Crafting the hook...",
+                  "Building structure...",
+                  "Writing main content...",
+                  "Adding CTAs...",
+                  "Almost done...",
+                ]}
+              />
             </div>
           )}
 

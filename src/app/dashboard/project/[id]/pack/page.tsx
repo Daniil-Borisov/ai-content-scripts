@@ -4,7 +4,6 @@ import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useJobStream } from "@/lib/use-job-stream";
 import {
   ArrowLeft,
   Copy,
@@ -67,10 +66,6 @@ function ScriptCard({
   const [expandedBlocks, setExpandedBlocks] = useState<Set<number>>(new Set());
   const [copied, setCopied] = useState(false);
 
-  const { status: jobStatus } = useJobStream(
-    script.status === "generating" ? script.jobId || null : null
-  );
-
   const toggleBlock = (index: number) => {
     setExpandedBlocks((prev) => {
       const next = new Set(prev);
@@ -90,7 +85,6 @@ function ScriptCard({
   };
 
   const isGenerating = script.status === "generating";
-  const progress = (jobStatus?.progress as number) || 0;
 
   return (
     <div className="bg-card border border-border rounded-[12px] overflow-hidden">
@@ -103,7 +97,7 @@ function ScriptCard({
           {isGenerating && (
             <div className="flex items-center gap-2">
               <Loader2 size={14} className="animate-spin text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">{progress}%</span>
+              <span className="text-xs text-muted-foreground">Generating...</span>
             </div>
           )}
           {script.status === "completed" && (
@@ -145,11 +139,8 @@ function ScriptCard({
       {/* Progress bar for generating */}
       {isGenerating && (
         <div className="px-5 pb-3">
-          <div className="h-1 bg-muted rounded-full overflow-hidden">
-            <div
-              className="h-full bg-foreground transition-all duration-300 ease-out rounded-full"
-              style={{ width: `${progress}%` }}
-            />
+          <div className="h-1 bg-muted rounded-full overflow-hidden relative">
+            <div className="absolute inset-y-0 w-2/5 bg-foreground rounded-full animate-indeterminate-bar" />
           </div>
         </div>
       )}

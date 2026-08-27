@@ -28,6 +28,12 @@ interface Project {
 
 const statusLabels: Record<string, { label: string; color: string }> = {
   draft: { label: "Draft", color: "bg-muted text-muted-foreground" },
+  ideas_generated: { label: "Ideas", color: "bg-blue-100 text-blue-700" },
+  researching: { label: "Researching", color: "bg-amber-100 text-amber-700" },
+  research_complete: {
+    label: "Researched",
+    color: "bg-amber-100 text-amber-700",
+  },
   generating: { label: "Generating", color: "bg-amber-100 text-amber-700" },
   completed: { label: "Completed", color: "bg-green-100 text-green-700" },
 };
@@ -151,10 +157,12 @@ export default function ProjectsPage() {
                         <span
                           className={cn(
                             "text-xs px-2 py-0.5 rounded-full shrink-0",
-                            statusLabels[project.status]?.color
+                            (statusLabels[project.status] || statusLabels.draft)
+                              .color
                           )}
                         >
-                          {statusLabels[project.status]?.label}
+                          {(statusLabels[project.status] || statusLabels.draft)
+                            .label}
                         </span>
                       </div>
                       <p className="text-sm text-muted-foreground truncate mb-3">
