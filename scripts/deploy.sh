@@ -42,7 +42,9 @@ git checkout "$BRANCH"
 git reset --hard "origin/$BRANCH"
 
 log "Установка зависимостей..."
-npm ci
+# npm ci падает на сервере (npm 10), если lockfile собран на npm 11 / другой платформе
+rm -rf node_modules
+npm install --no-audit --no-fund
 
 log "Prisma generate..."
 npx prisma generate
