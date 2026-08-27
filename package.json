@@ -11,6 +11,7 @@
     "db:schema": "bash scripts/db/setup.sh --schema-only",
     "db:seed": "bash scripts/db/setup.sh --seed-only",
     "db:seed:demo": "npx tsx prisma/seed/index.ts",
+    "db:check": "bash scripts/db/check.sh",
     "lint": "eslint",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
