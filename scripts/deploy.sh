@@ -72,6 +72,24 @@ if [[ "${swap_kb}" -lt 1048576 ]]; then
   exit 1
 fi
 
+log "Запись build-info..."
+GIT_SHA="$(git rev-parse --short HEAD)"
+GIT_SHA_FULL="$(git rev-parse HEAD)"
+BUILT_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+mkdir -p public
+cat > public/build-info.json <<EOF
+{
+  "gitSha": "${GIT_SHA}",
+  "gitShaFull": "${GIT_SHA_FULL}",
+  "builtAt": "${BUILT_AT}",
+  "branch": "${BRANCH}"
+}
+EOF
+export NEXT_PUBLIC_GIT_SHA="${GIT_SHA}"
+export NEXT_PUBLIC_BUILT_AT="${BUILT_AT}"
+export GIT_SHA_FULL="${GIT_SHA_FULL}"
+log "Build marker: ${GIT_SHA} @ ${BUILT_AT}"
+
 log "Сборка Next.js (webpack, меньше пик RAM чем turbopack)..."
 export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=1536}"
 npx next build --webpack
@@ -80,7 +98,7 @@ mkdir -p logs
 
 log "Перезапуск PM2..."
 if pm2 describe ai-content-web >/dev/null 2>&1; then
-  pm2 reload ecosystem.config.cjs --update-env
+  pm2 restart ecosystem.config.cjs --update-env
 else
   pm2 start ecosystem.config.cjs
 fi
@@ -90,4 +108,23 @@ pm2 save
 log "Статус:"
 pm2 status
 
-log "Деплой завершён."
+log "Проверка версии на :3000..."
+sleep 2
+if command -v curl >/dev/null 2>&1; then
+  HEALTH_JSON="$(curl -fsS --max-time 10 http://127.0.0.1:3000/api/health || true)"
+  if [[ -n "$HEALTH_JSON" ]]; then
+    echo "$HEALTH_JSON"
+    RUNNING_SHA="$(node -e "const d=JSON.parse(process.argv[1]); process.stdout.write(d?.build?.gitSha||'')" "$HEALTH_JSON")"
+    if [[ "$RUNNING_SHA" != "$GIT_SHA" ]]; then
+      echo "WARN: ожидался gitSha=${GIT_SHA}, в /api/health=${RUNNING_SHA:-empty}" >&2
+      echo "Проверь: pm2 logs ai-content-web --lines 50" >&2
+      exit 1
+    fi
+    log "OK: сервер отдаёт сборку ${RUNNING_SHA}"
+  else
+    echo "WARN: /api/health недоступен сразу после рестарта" >&2
+    echo "Проверь вручную: curl -s http://127.0.0.1:3000/api/version" >&2
+  fi
+fi
+
+log "Деплой завершён. version=${GIT_SHA} builtAt=${BUILT_AT}"

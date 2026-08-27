@@ -1,8 +1,15 @@
 import { NextResponse } from "next/server";
+import { getBuildInfo } from "@/lib/build-info";
 import { db } from "@/lib/db";
 
 export type HealthStatusType = {
   status: "ok" | "degraded" | "error";
+  build: {
+    gitSha: string;
+    gitShaFull: string;
+    builtAt: string;
+    branch: string;
+  };
   checks: {
     database: {
       ok: boolean;
@@ -15,6 +22,7 @@ export type HealthStatusType = {
 
 export const GET = async (): Promise<NextResponse<HealthStatusType>> => {
   const timestamp = new Date().toISOString();
+  const build = await getBuildInfo();
   const startedAt = Date.now();
 
   try {
@@ -24,6 +32,7 @@ export const GET = async (): Promise<NextResponse<HealthStatusType>> => {
     return NextResponse.json(
       {
         status: "ok",
+        build,
         checks: {
           database: { ok: true, latencyMs },
         },
@@ -38,6 +47,7 @@ export const GET = async (): Promise<NextResponse<HealthStatusType>> => {
     return NextResponse.json(
       {
         status: "error",
+        build,
         checks: {
           database: {
             ok: false,
